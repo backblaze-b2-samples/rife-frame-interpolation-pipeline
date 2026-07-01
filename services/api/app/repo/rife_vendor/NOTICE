@@ -1,0 +1,32 @@
+Vendored RIFE model architecture — attribution
+================================================
+
+The frame-interpolation model architecture in this directory
+(ifnet_hdv3.py, warplayer.py) is derived from the Practical-RIFE project:
+
+    Practical-RIFE / RIFE: Real-Time Intermediate Flow Estimation
+    Author:  hzwer (Zhewei Huang) and contributors
+    Source:  https://github.com/hzwer/Practical-RIFE
+             https://github.com/hzwer/ECCV2022-RIFE
+    License: MIT (see LICENSE in this directory)
+
+Paper:
+    Huang, Z., Zhang, T., Heng, W., Shi, B., Zhou, S.
+    "Real-Time Intermediate Flow Estimation for Video Frame Interpolation."
+    ECCV 2022.
+
+What is vendored here
+---------------------
+Only the model ARCHITECTURE (pure PyTorch nn.Module code) is vendored — this
+is the HDv3 IFNet variant. The trained weights (`flownet.pkl`) are NOT
+committed to this repository. They are fetched at setup time by
+`scripts/setup_rife.py` from a pinned, MIT-licensed HuggingFace mirror of the
+upstream Practical-RIFE weights (default: AlexWortega/RIFE, a verified mirror
+whose 160-tensor state dict loads into ifnet_hdv3.py with strict=True). The
+mirror repo, file and revision are all env-configurable — see settings.py.
+
+Reproducibility note
+--------------------
+Upstream distributes weights only via Google Drive / Baidu, which cannot be
+used for automated/clean-install setup. Pinning a HuggingFace mirror revision
+makes `pnpm setup:rife` deterministic and scriptable.

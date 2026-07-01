@@ -1,0 +1,27 @@
+{
+  "name": "rife-frame-interpolation-pipeline",
+  "private": true,
+  "scripts": {
+    "doctor": "node scripts/doctor.mjs",
+    "predev": "node scripts/doctor.mjs",
+    "dev": "sh scripts/dev.sh",
+    "dev:web": "pnpm --filter @rife-frame-interpolation-pipeline/web dev",
+    "dev:api": "cd services/api && .venv/bin/uvicorn main:app --reload --port ${API_PORT:-8000}",
+    "build": "pnpm --filter @rife-frame-interpolation-pipeline/web build",
+    "typecheck": "pnpm --filter @rife-frame-interpolation-pipeline/web typecheck",
+    "lint": "pnpm --filter @rife-frame-interpolation-pipeline/web lint",
+    "lint:api": "cd services/api && .venv/bin/ruff check .",
+    "test:api": "cd services/api && .venv/bin/python -m pytest",
+    "check:structure": "cd services/api && .venv/bin/python -m pytest tests/test_structure.py -v",
+    "test:e2e": "pnpm --filter @rife-frame-interpolation-pipeline/web exec playwright test",
+    "setup:rife": "cd services/api && .venv/bin/python scripts/setup_rife.py",
+    "seed:demo": "cd services/api && .venv/bin/python scripts/seed_demo.py"
+  },
+  "devDependencies": {
+    "concurrently": "^9.1.0"
+  },
+  "engines": {
+    "node": ">=20",
+    "pnpm": ">=9"
+  }
+}

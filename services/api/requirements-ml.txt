@@ -1,0 +1,48 @@
+# Heavy local ML stack for the RIFE frame-interpolation engine.
+#
+# These are intentionally SEPARATE from requirements.txt: the API boots and
+# `pnpm test:api` / `pnpm check:structure` pass WITHOUT this file installed,
+# because torch + the vendored RIFE model + OpenCV are lazy-imported inside
+# app/repo/rife_engine.py and app/repo/encoder.py only when a job actually runs.
+#
+# Install when you want to run interpolation:
+#   cd services/api && source .venv/bin/activate
+#   pip install -r requirements-ml.txt
+#   python scripts/setup_rife.py     # fetch pinned RIFE weights (one time)
+#
+# Python <= 3.11 is required (RIFE constraint) — see doctor.mjs.
+#
+# Device note: the engine auto-detects CUDA -> Apple MPS -> CPU (see
+# app/repo/rife_engine.py) and DEFAULTS TO CPU. No GPU is ever required.
+# MAX_SOURCE_FRAMES caps a CPU demo so a render finishes fast.
+
+# torch drives the RIFE optical-flow model. A 2.x window with CPU wheels for
+# Python 3.11 on PyPI (bare `pip install` works — no --index-url needed).
+# torch 2.6+ flips torch.load(weights_only=True); we load the TRUSTED local
+# checkpoint with weights_only=False (see rife_engine.py, R4). Verified working
+# with 2.12.x (loads flownet.pkl strict=True + interpolates on CPU); the lower
+# bound keeps the 2.2 wheels reachable for older/pinned environments.
+# (torchvision is intentionally omitted — the engine uses only torch.)
+torch>=2.2.0,<2.13
+
+# numpy<2 — the RIFE arch + OpenCV interop are validated against the 1.x ABI;
+# a numpy 2.x bump is a known clean-install breaker for CV stacks.
+numpy>=1.24.0,<2
+
+# Frame decode (source clip -> RGB frames).
+opencv-python-headless>=4.8.0,<5
+
+# Pinned reproducible weight fetch (Google-Drive/Baidu upstream is unusable for
+# automation, R2). setup_rife.py pulls flownet.pkl from a pinned HF mirror.
+huggingface_hub>=0.24.0,<1
+
+# H.264/HEVC encode goes through the BUNDLED libx264-capable ffmpeg (NOT bare
+# Homebrew ffmpeg, which may ship slim). ffprobe from the same bundle powers
+# the video-metadata probe. R6.
+imageio-ffmpeg>=0.5.1
+
+# Progress bars for the model fetch.
+tqdm>=4.66.0
+
+# NOTE (R3): we deliberately AVOID sk-video and moviepy (upstream RIFE deps
+# that are fragile on py3.11/arm64) — decode is OpenCV, encode is imageio-ffmpeg.
