@@ -5,6 +5,32 @@ Turn standard-frame-rate footage into buttery high-frame-rate slow motion — se
 
 It's for sports-analytics teams, cinematographers, and game studios who need self-hosted slow-mo without shipping frames to a paid API.
 
+## What it looks like
+
+**Dashboard** — write-amplification ratio, source-vs-render volume, a 14-day render-output chart, and recent render jobs.
+
+![Dashboard with write-amplification and render-output metrics](docs/images/dashboard.png)
+
+**Render Jobs** — every interpolation job in one table: source clip, multiplier, codec, status, and its write-amplification ratio.
+
+![Render Jobs table listing interpolation jobs](docs/images/render-jobs.png)
+
+**New render job** — pick a source clip, a 2x / 4x / 8x frame-rate multiplier, and an output codec to define an immutable render.
+
+![New render job form with clip, multiplier, and codec selectors](docs/images/new-render-job.png)
+
+**Job detail** — the rendered slow-motion clip playing inline, its write-amplification headline, and the full B2 manifest.
+
+![Job detail with inline slow-motion playback and B2 manifest](docs/images/job-detail.png)
+
+**Library** — this app's own media: each source clip with its 2x / 4x / 8x renders and inline playback.
+
+![Library of source clips and their renders with inline playback](docs/images/library.png)
+
+**Upload** — drag-and-drop video ingest into `source/clips/` on B2, the input to every render job.
+
+![Upload page with a drag-and-drop video dropzone](docs/images/upload.png)
+
 ## Why B2: the write-amplification story
 
 Frame interpolation is a **write-heavy** workload. A 4x interpolation of a 1 TB source library produces **4+ TB of render output**, and continuous batch jobs sustain high write throughput. The dashboard surfaces the ratio (**render bytes ÷ source bytes**) front and center — the classic write-heavy workload B2 is ideal and cost-effective for.
