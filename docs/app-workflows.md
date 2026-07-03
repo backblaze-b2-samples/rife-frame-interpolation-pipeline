@@ -5,7 +5,7 @@ User journeys inside the application.
 
 ## Ingest a clip → render slow motion (the primary journey)
 
-1. **Upload** — user navigates to `/upload`, drops a source video clip (MP4/MOV/WebM/MKV/AVI, up to 500MB). It lands under `source/clips/` on B2. (Or run `pnpm seed:demo` to add a synthetic clip.)
+1. **Upload** — user navigates to `/upload`, drops a source video clip (MP4/MOV/WebM/MKV/AVI, up to 500MB). It lands under `source/clips/` on B2. (Or run `pnpm seed:demo` to add a synthetic clip.) Once a clip finishes uploading, a **Create render job** button links straight to `/jobs/new` so the next step is one click away.
 2. **Create a job** — user goes to `/jobs` → **New render job**, picks the source clip (Select), a multiplier (2x / 4x / 8x, RadioGroup), and a codec (H.264 / H.265, Select). A `pending` job manifest is written to B2. Target fps = source fps × multiplier (derived on run).
 3. **Run** — user opens the job detail (`/jobs/[clip]/[multiplier]`) and clicks **Run**. A background render executes: download → decode → RIFE interpolate → encode MP4 → multipart upload → manifest update. A live progress bar polls every 2s.
 4. **Play** — on completion, the write-amplification ratio and manifest appear, and the rendered slow-mo plays inline in an HTML5 `<video>` via a presigned URL.

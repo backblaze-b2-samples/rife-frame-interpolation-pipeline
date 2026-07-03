@@ -43,13 +43,32 @@ function fmtBytes(n: number): string {
 export function JobDetail({ clipId, multiplier }: { clipId: string; multiplier: number }) {
   const router = useRouter();
   const { data: job, isLoading, error, refetch } = useJob(clipId, multiplier, true);
+  // Poll run-progress whenever the manifest is non-terminal. The manifest stays
+  // "pending" for the whole render (it only flips to completed/failed at the
+  // end), so this keeps live progress polling while a render is in flight — but
+  // it does NOT by itself mean a render is underway (see isRendering below).
   const isBusy = job?.status === "running" || job?.status === "pending";
   const { data: progress } = useJobProgress(isBusy);
   const runJob = useRunJob();
+  // Run is only blocked while a render is actively in flight — never for a
+  // freshly-created "pending" job, which must be startable from the UI.
+  const isRunning = job?.status === "running" || runJob.isPending;
   const deleteJob = useDeleteJob();
   const [confirmingDelete, setConfirmingDelete] = useState(false);
 
   const live = progress?.find((p) => p.job_id === job?.job_id);
+  // A render is actually underway only when the ephemeral run-progress registry
+  // holds a live, non-terminal entry for THIS job. That entry is created solely
+  // when a run is enqueued (progress.start), so a freshly-created "pending" job
+  // that was never run has none — it shows the idle/ready state, not this card.
+  // runJob.isPending bridges the brief click->first-poll gap right after "Run".
+  const isRendering =
+    runJob.isPending ||
+    live?.status === "running" ||
+    live?.status === "pending";
+  // Created but never run: a pending manifest with no active render. Gets a
+  // ready-to-run hint instead of the (misleading) in-progress card.
+  const isIdle = job?.status === "pending" && !isRendering;
   const canPlay = job?.status === "completed" && !!job.render_key;
   const { data: render } = useRenderUrl(clipId, multiplier, canPlay);
 
@@ -100,7 +119,7 @@ export function JobDetail({ clipId, multiplier }: { clipId: string; multiplier: 
           {job.status}
         </span>
         <div className="flex gap-2">
-          <Button size="sm" onClick={onRun} disabled={isBusy}>
+          <Button size="sm" onClick={onRun} disabled={isRunning}>
             <Play className="h-4 w-4" />
             {job.status === "completed" ? "Re-run" : "Run"}
           </Button>
@@ -148,7 +167,19 @@ export function JobDetail({ clipId, multiplier }: { clipId: string; multiplier: 
         </CardContent>
       </Card>
 
-      {isBusy && (
+      {isIdle && (
+        <Card>
+          <CardContent className="p-5">
+            <p className="text-sm text-muted-foreground">
+              This job is ready but hasn&apos;t run yet. Click{" "}
+              <span className="font-medium text-foreground">Run</span> to
+              interpolate the source clip and render the slow-motion output.
+            </p>
+          </CardContent>
+        </Card>
+      )}
+
+      {isRendering && (
         <Card>
           <CardContent className="p-5">
             <p className="text-sm text-muted-foreground">

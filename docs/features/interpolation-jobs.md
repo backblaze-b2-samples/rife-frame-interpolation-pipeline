@@ -47,6 +47,7 @@ Create, read, run, and delete a RIFE render job — an immutable record of turni
 ## UX States
 - Empty: "No render jobs yet" with a create CTA
 - Loading: skeleton rows; running: live progress bar (polled every 2s)
+- Created (pending, never run): a "ready to run" hint, NOT the progress bar — the in-progress card is keyed on a live run-progress entry for the job, not on `status === "pending"`, so an idle job is visually distinct from an active render
 - Error: failed badge + the actionable error message on the detail page
 - Loaded: manifest table, write-amplification hero, `<video>` render player
 

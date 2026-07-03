@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useState } from "react";
+import Link from "next/link";
 import { toast } from "sonner";
 import type { FileRejection } from "react-dropzone";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -195,6 +196,7 @@ export function UploadForm() {
   const hasCompleted = items.some(
     (i) => i.status === "complete" || i.status === "error"
   );
+  const hasSuccessfulUpload = items.some((i) => i.status === "complete");
   const uploadSummary = getUploadSummary(items);
 
   return (
@@ -222,7 +224,7 @@ export function UploadForm() {
           onRetry={retryUpload}
         />
         {hasCompleted && !uploading && (
-          <div className="flex justify-end">
+          <div className="flex flex-wrap items-center justify-end gap-2">
             <Button
               aria-label="Clear completed and failed uploads"
               variant="outline"
@@ -231,6 +233,11 @@ export function UploadForm() {
             >
               Clear finished
             </Button>
+            {hasSuccessfulUpload && (
+              <Button asChild size="sm">
+                <Link href="/jobs/new">Create render job</Link>
+              </Button>
+            )}
           </div>
         )}
       </CardContent>

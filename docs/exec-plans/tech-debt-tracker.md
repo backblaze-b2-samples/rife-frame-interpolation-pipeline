@@ -14,3 +14,11 @@ Known tech debt items. Agents update this when they discover or create tech debt
 | `humanizeBytes` duplicated in TypeScript | DRY violation | Extract to `lib/utils.ts` | Low | Open |
 | `formatDate` duplicated in TypeScript | DRY violation | Extract to `lib/utils.ts` | Low | Open |
 | No test harness for feature specs | No automated verification | Add pytest fixtures + test files per feature | Medium | Resolved (partial — tests added for upload, files, activity, errors) |
+
+## 2026-07-03 — verify
+
+Nitpicks surfaced by the 3-lens UX verify (blockers/frictions were fixed in the same pass; these are backlog-only):
+
+- **/jobs/new (upload→create hand-off)** — the "Create render job" button on the upload-complete page lands on /jobs/new but the Source-clip combobox still reads "Select an uploaded clip…" → the just-uploaded clip is not pre-selected, so the user manually re-selects it (adversarial gate demoted this from friction to nitpick: correct page reached, selector works; a pre-fill would require query-param plumbing since the form's `source_key` is a B2 key while the upload item only carries `file.name`). (.local/lensA3_04_newjob_landed.png)
+- **/jobs/new (cold start)** — the Source-clip helper text mentions that clips land under source/clips/ but there is no inline link/button to /upload → a first-time user with no clips must discover "Upload" in the left nav. (.local/lensA3_04_newjob_landed.png)
+- **/jobs/[clip]/[multiplier] (active render)** — the status pill reads "pending" for the whole in-flight render (the B2 manifest only flips to completed/failed at the end; there is no intermediate "running" manifest) → the pill lags the true state, though the live progress card + advancing bar + stage text make the running state unmistakable. (.local/lensB3_06_running_midwaitA.png)

@@ -141,7 +141,7 @@ export function JobsList() {
                       size="icon"
                       className="h-8 w-8"
                       aria-label="Run render"
-                      disabled={j.status === "running" || j.status === "pending"}
+                      disabled={j.status === "running"}
                       onClick={() => onRun(j)}
                     >
                       <Play className="h-4 w-4" />
