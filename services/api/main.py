@@ -104,7 +104,7 @@ logger = logging.getLogger("api")
 
 app = FastAPI(
     title="RIFE Frame Interpolation Pipeline API",
-    description="High-frame-rate slow-motion render pipeline backed by Backblaze B2",
+    description="Smooth slow-motion render pipeline backed by Backblaze B2",
     version="0.1.0",
     lifespan=lifespan,
 )

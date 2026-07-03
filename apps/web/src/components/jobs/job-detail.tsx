@@ -101,10 +101,9 @@ export function JobDetail({ clipId, multiplier }: { clipId: string; multiplier: 
 
   const rows: [string, string][] = [
     ["Source clip", job.config.source_key],
-    ["Multiplier", `${job.config.multiplier}x`],
+    ["Slow-motion", `${job.config.multiplier}x (${1 / job.config.multiplier}x speed)`],
     ["Codec", job.config.codec.toUpperCase()],
-    ["Source fps", job.source_fps !== null ? `${job.source_fps}` : "—"],
-    ["Target fps", job.target_fps !== null ? `${job.target_fps}` : "—"],
+    ["Playback fps", job.source_fps !== null ? `${job.source_fps} (same as source)` : "—"],
     ["Source size", fmtBytes(job.source_bytes)],
     ["Render size", fmtBytes(job.render_bytes)],
     ["Created", new Date(job.created_at).toLocaleString()],

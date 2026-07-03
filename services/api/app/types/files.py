@@ -23,7 +23,7 @@ class FileMetadataDetail(BaseModel):
     md5: str
     sha256: str
     uploaded_at: datetime
-    # Video-specific — fps is load-bearing (drives target-fps + amplification).
+    # Video-specific — fps is load-bearing (render playback rate + amplification).
     fps: float | None = None
     duration_seconds: float | None = None
     codec: str | None = None

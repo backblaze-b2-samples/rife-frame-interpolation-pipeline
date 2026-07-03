@@ -148,8 +148,9 @@ export function CreateJobForm() {
                     </RadioGroup>
                   </FormControl>
                   <FormDescription>
-                    Default 2x. Target fps = source fps x multiplier (computed on
-                    run).
+                    Default 2x. The render keeps the source fps but holds this
+                    many times the frames, so it plays that many times slower
+                    (2x = half speed).
                   </FormDescription>
                   <FormMessage />
                 </FormItem>
@@ -185,13 +186,13 @@ export function CreateJobForm() {
               )}
             />
 
-            {/* Derived, read-only target fps hint (never a text input). */}
+            {/* Derived, read-only slow-motion hint (never a text input). */}
             <div className="rounded-md border border-border bg-muted/20 p-3 text-sm">
-              <span className="text-muted-foreground">Target frame rate: </span>
+              <span className="text-muted-foreground">Output speed: </span>
               {selectedClip ? (
                 <span className="font-medium">
-                  source fps x {selectedMultiplier}x (measured when the render
-                  runs)
+                  {1 / selectedMultiplier}x speed — plays at the source fps for{" "}
+                  {selectedMultiplier}x longer ({selectedMultiplier}x slow motion)
                 </span>
               ) : (
                 <span className="text-muted-foreground">

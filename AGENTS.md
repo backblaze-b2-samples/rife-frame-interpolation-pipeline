@@ -41,7 +41,7 @@ This app was built on the vibe-coding-starter-kit. The starter contract was hono
 - **Settings.** `settings-form.tsx` is the form-UX exemplar (selectors + default hints) and now exposes interpolation defaults (default multiplier + codec, demo-only).
 
 **Trimmed**
-- Image/PDF metadata extraction (old `service/metadata.py` branches, Pillow/PyPDF2 deps, `FileMetadataDetail.image_*/exif/pdf_*` fields) — this app deals in **video clips only**. Video metadata (fps/duration/codec/resolution/bitrate) is kept; **fps is load-bearing** for target-fps + amplification.
+- Image/PDF metadata extraction (old `service/metadata.py` branches, Pillow/PyPDF2 deps, `FileMetadataDetail.image_*/exif/pdf_*` fields) — this app deals in **video clips only**. Video metadata (fps/duration/codec/resolution/bitrate) is kept; **fps is load-bearing** — it is the render's playback rate (slow motion keeps the source fps) and feeds amplification.
 
 ### 2b. Primary-entity lifecycle (InterpolationJob)
 

@@ -1,7 +1,7 @@
 <!-- last_verified: 2026-06-30 -->
 # RIFE Frame Interpolation Pipeline
 
-Turn standard-frame-rate footage into buttery high-frame-rate slow motion — self-hosted, with **B2 credentials only, no second API key**. This sample is a B2-backed video post-production pipeline: ingest source clips into **[Backblaze B2](https://www.backblaze.com/cloud-storage?utm_source=github&utm_medium=referral&utm_campaign=ai_artifacts&utm_content=b2ai-oss-start)**, run **Practical-RIFE** (optical-flow neural frame interpolation) on-device to synthesize intermediate frames, re-encode to browser-playable MP4 at 2x / 4x / 8x the original frame rate, and write the render back to B2.
+Turn ordinary footage into buttery-smooth slow motion — self-hosted, with **B2 credentials only, no second API key**. This sample is a B2-backed video post-production pipeline: ingest source clips into **[Backblaze B2](https://www.backblaze.com/cloud-storage?utm_source=github&utm_medium=referral&utm_campaign=ai_artifacts&utm_content=b2ai-oss-start)**, run **Practical-RIFE** (optical-flow neural frame interpolation) on-device to synthesize intermediate frames, then play them back at the source frame rate so the clip runs 2x / 4x / 8x slower while staying smooth, and write the render back to B2.
 
 It's for sports-analytics teams, cinematographers, and game studios who need self-hosted slow-mo without shipping frames to a paid API.
 
@@ -39,7 +39,7 @@ Frame interpolation is a **write-heavy** workload. A 4x interpolation of a 1 TB 
 
 1. **Ingest** — upload a source clip; it lands under `source/clips/` on B2 over the S3 API.
 2. **Interpolate** — RIFE synthesizes `multiplier - 1` intermediate frames between every adjacent pair, on-device (CPU by default; CUDA / Apple MPS auto-detected).
-3. **Encode** — the interpolated frames are re-encoded to a browser-playable MP4 (H.264 default) at `source_fps x multiplier`.
+3. **Encode** — the interpolated frames are re-encoded to a browser-playable MP4 (H.264 default) at the **source fps**, so the `multiplier`× extra frames stretch the clip to `multiplier`× its duration (`1/multiplier` speed) — genuine slow motion, not just a smoother same-length clip.
 4. **Store** — the render is uploaded back to B2 (multipart) under `renders/<clip_id>/<multiplier>x/`, alongside a JSON manifest.
 5. **Serve** — the render streams into an HTML5 `<video>` player via a short-lived presigned URL.
 

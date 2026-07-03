@@ -1,10 +1,13 @@
-"""Interpolation run orchestration: source clip -> high-frame-rate render.
+"""Interpolation run orchestration: source clip -> smooth slow-motion render.
 
 Flow (the write-amplification story — a 4x render of a 1 TB library makes 4+ TB):
 
     source/clips/<clip>  --download-->  decode frames (OpenCV) -->
         RIFE HDv3 neural interpolation (multiplier-1 synthesized frames per pair)
-        --> re-encode to browser-playable MP4 (H.264 default) at source_fps*mult
+        --> re-encode to browser-playable MP4 (H.264 default) at the SOURCE fps,
+            so the ~multiplier-more frames stretch the timeline into genuine
+            slow motion (duration x multiplier, playback 1/multiplier speed) --
+            NOT an fps boost, which would keep the duration and only smooth it
         --> MULTIPART upload to renders/<clip_id>/<multiplier>x/render.mp4
         --> update renders/<clip_id>/<multiplier>x/manifest.json (status, sizes,
             amplification_ratio)
@@ -71,7 +74,11 @@ def run_interpolation(job: InterpolationJob) -> InterpolationJob:
         progress.update(job.job_id, progress=0.15, message="Decoding source frames")
         decoded = encoder.decode_frames(src_path, settings.max_source_frames)
         source_fps = decoded["fps"]
-        target_fps = source_fps * cfg.multiplier
+        # Slow motion: the interpolated frames play back at the SOURCE fps, so
+        # the extra frames stretch the clip to multiplier x its duration (speed
+        # = 1/multiplier). Encoding at source_fps*multiplier would instead keep
+        # the duration and merely raise smoothness -- an fps boost, not slow-mo.
+        speed_factor = 1.0 / cfg.multiplier
 
         device = rife_engine.select_device(settings.device)
         progress.update(
@@ -83,7 +90,7 @@ def run_interpolation(job: InterpolationJob) -> InterpolationJob:
         )
 
         progress.update(job.job_id, progress=0.75, message="Encoding render (H.264)")
-        encoder.encode_frames(frames, out_path, fps=target_fps, codec=cfg.codec)
+        encoder.encode_frames(frames, out_path, fps=source_fps, codec=cfg.codec)
 
         progress.update(job.job_id, progress=0.9, message="Uploading render to B2 (multipart)")
         rkey = jobs.render_key(clip_id, cfg.multiplier, cfg.codec)
@@ -94,7 +101,6 @@ def run_interpolation(job: InterpolationJob) -> InterpolationJob:
             update={
                 "status": "completed",
                 "source_fps": round(source_fps, 3),
-                "target_fps": round(target_fps, 3),
                 "source_bytes": source_bytes,
                 "render_bytes": render_bytes,
                 "amplification_ratio": ratio,
@@ -106,11 +112,17 @@ def run_interpolation(job: InterpolationJob) -> InterpolationJob:
         jobs.save_job(clip_id, completed)
         progress.update(
             job.job_id, status="completed", progress=1.0,
-            message=f"Rendered {target_fps:g} fps ({ratio}x write amplification)",
+            message=(
+                f"Rendered {cfg.multiplier}x slow motion "
+                f"({speed_factor:g}x speed at {source_fps:g} fps, "
+                f"{ratio}x write amplification)"
+            ),
         )
         logger.info(
-            "Rendered clip=%s mult=%dx frames=%d src=%dB render=%dB ratio=%s",
-            clip_id, cfg.multiplier, len(frames), source_bytes, render_bytes, ratio,
+            "Rendered clip=%s mult=%dx speed=%.3gx fps=%.3g frames=%d "
+            "src=%dB render=%dB ratio=%s",
+            clip_id, cfg.multiplier, speed_factor, source_fps, len(frames),
+            source_bytes, render_bytes, ratio,
         )
         return completed
     finally:

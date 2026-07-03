@@ -20,7 +20,7 @@ export interface FileMetadataDetail {
   md5: string;
   sha256: string;
   uploaded_at: string;
-  // Video-specific — fps is load-bearing (target-fps + amplification).
+  // Video-specific — fps is load-bearing (render playback rate + amplification).
   fps: number | null;
   duration_seconds: number | null;
   codec: string | null;
@@ -69,8 +69,9 @@ export interface InterpolationJob {
   job_id: string;
   config: JobConfig;
   status: JobStatus;
+  // Source clip fps; the render plays back at this same rate (slow motion).
+  // Playback speed / duration derive from source_fps + config.multiplier.
   source_fps: number | null;
-  target_fps: number | null;
   source_bytes: number;
   render_bytes: number;
   amplification_ratio: number | null;

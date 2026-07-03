@@ -69,7 +69,7 @@ export function JobsList() {
       <EmptyState
         icon={Film}
         title="No render jobs yet"
-        description="Create a render job to interpolate a source clip into high-frame-rate slow motion."
+        description="Create a render job to interpolate a source clip into smooth slow motion."
         action={
           <Button asChild size="sm">
             <Link href="/jobs/new">New render job</Link>

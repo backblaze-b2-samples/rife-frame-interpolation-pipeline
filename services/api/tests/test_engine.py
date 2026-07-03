@@ -89,6 +89,8 @@ def test_run_interpolation_wiring_with_mocked_engine(monkeypatch):
     monkeypatch.setattr(interpolation, "head_size", lambda key: 1000)
     monkeypatch.setattr(interpolation, "multipart_upload_file", lambda path, key, ct: 4000)
 
+    encoded = {}
+
     class _Encoder:
         @staticmethod
         def decode_frames(path, maxf):
@@ -96,6 +98,7 @@ def test_run_interpolation_wiring_with_mocked_engine(monkeypatch):
 
         @staticmethod
         def encode_frames(frames, out_path, fps, codec):
+            encoded.update({"fps": fps, "n_frames": len(frames)})
             _touch(out_path)
 
     class _Engine:
@@ -131,6 +134,10 @@ def test_run_interpolation_wiring_with_mocked_engine(monkeypatch):
     assert result.render_bytes == 4000
     assert result.amplification_ratio == 4.0
     assert result.source_fps == 24.0
-    assert result.target_fps == 96.0
+    # Slow motion: the render is encoded at the SOURCE fps, not source*mult, so
+    # the extra frames stretch the clip to 4x its duration (1/4 speed). Encoding
+    # at 96 fps here would keep the duration and only smooth it (an fps boost).
+    assert encoded["fps"] == 24.0
+    assert encoded["n_frames"] == 12  # 3 frames * 4x mult (mocked engine)
     assert result.render_key == "renders/x/4x/render.mp4"
     assert "x" in saved

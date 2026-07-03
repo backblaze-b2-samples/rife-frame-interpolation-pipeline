@@ -28,10 +28,10 @@ def get_dashboard_stats() -> DashboardStats:
 
     jobs = list_jobs()
     completed = [j for j in jobs if j.status == "completed"]
-    # fps-minutes: a proxy for compute throughput — sum of target fps * duration
+    # fps-minutes: a proxy for compute throughput — synthesized-frames * duration
     # is unavailable without probing, so we approximate with rendered frames via
     # the amplification payload; keep it simple and honest: count completed jobs
-    # weighted by multiplier as "fps-minutes processed".
+    # weighted by multiplier (the slow-motion factor) as "fps-minutes processed".
     fps_minutes = round(sum(j.multiplier for j in completed) * 1.0, 2)
 
     ratio = round(total_render / total_source, 3) if total_source else 0.0

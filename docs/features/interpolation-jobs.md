@@ -2,7 +2,7 @@
 # Feature: Interpolation Jobs (primary entity)
 
 ## Purpose
-Create, read, run, and delete a RIFE render job — an immutable record of turning a source clip into a high-frame-rate slow-motion render on B2.
+Create, read, run, and delete a RIFE render job — an immutable record of turning a source clip into a smooth slow-motion render on B2.
 
 ## Used By
 - UI: `/jobs` (list + create form dialog), `/jobs/new` (create), `/jobs/[clip]/[multiplier]` (detail/run/delete)
@@ -27,7 +27,7 @@ Create, read, run, and delete a RIFE render job — an immutable record of turni
 - `config.codec`: "h264" | "h265" (Select; H.264 default)
 
 ## Outputs
-- A `renders/<clip_id>/<multiplier>x/manifest.json` in B2 (`InterpolationJob`: status, source_fps, target_fps, source_bytes, render_bytes, amplification_ratio, render_key, timestamps)
+- A `renders/<clip_id>/<multiplier>x/manifest.json` in B2 (`InterpolationJob`: status, source_fps, source_bytes, render_bytes, amplification_ratio, render_key, timestamps). The render plays back at `source_fps`; playback speed (`1/multiplier`) and duration (`× multiplier`) derive from `source_fps` + `multiplier`.
 - On run: `renders/<clip_id>/<multiplier>x/render.mp4` (browser-playable, multipart-uploaded)
 - Side effects: B2 writes; a background thread; ephemeral progress updates
 

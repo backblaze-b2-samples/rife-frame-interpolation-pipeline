@@ -25,7 +25,8 @@ class JobConfig(BaseModel):
 
     # The source clip this render is built from (a source/clips/ object key).
     source_key: str
-    # Frame-rate multiplier: target_fps = source_fps * multiplier.
+    # Slow-motion factor: the render keeps the source fps but holds multiplier x
+    # the frames, so it lasts multiplier x longer and plays at 1/multiplier speed.
     multiplier: Multiplier = 2
     # Output codec — h264 (MP4, default, browser-playable) or h265 (HEVC).
     codec: Codec = "h264"
@@ -41,9 +42,10 @@ class InterpolationJob(BaseModel):
     job_id: str
     config: JobConfig
     status: JobStatus = "pending"
-    # Detected/derived frame rates (populated once a run reads the source).
+    # Source clip frame rate (populated once a run reads the source). The render
+    # plays back at this same fps -- that is what makes it slow motion. Playback
+    # speed and duration are derived from source_fps + config.multiplier.
     source_fps: float | None = None
-    target_fps: float | None = None
     # Byte sizes + the marquee B2 metric: render_bytes / source_bytes.
     source_bytes: int = 0
     render_bytes: int = 0

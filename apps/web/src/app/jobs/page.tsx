@@ -12,7 +12,7 @@ export default function JobsPage() {
           <h1 className="page-title">Render Jobs</h1>
           <p className="mt-1.5 max-w-prose text-sm text-muted-foreground">
             RIFE interpolation jobs — each turns a source clip into a
-            high-frame-rate slow-motion render stored on B2.
+            smooth slow-motion render stored on B2.
           </p>
         </div>
         <Button asChild size="sm" className="h-8 shrink-0">

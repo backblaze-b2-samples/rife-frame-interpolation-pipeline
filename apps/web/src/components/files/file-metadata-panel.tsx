@@ -56,7 +56,7 @@ export function FileMetadataPanel({ metadata }: FileMetadataPanelProps) {
         <MetaRow label="MD5" value={metadata.md5} />
         <MetaRow label="SHA-256" value={metadata.sha256} />
 
-        {/* Video metadata — fps is load-bearing (drives target-fps + amplification) */}
+        {/* Video metadata — fps is load-bearing (render playback rate + amplification) */}
         {(metadata.fps !== null ||
           metadata.duration_seconds !== null ||
           metadata.video_width !== null) && (
