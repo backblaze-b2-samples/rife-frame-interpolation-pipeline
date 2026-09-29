@@ -33,7 +33,7 @@
       "shadcn>browserslist": "4.28.8",
       "esbuild": "0.25.0",
       "express-rate-limit": "8.2.2",
-      "fast-uri": "3.1.6",
+      "fast-uri": "3.1.8",
       "flatted": "3.4.2",
       "hono": "4.12.34",
       "@humanfs/node": "0.16.8",
