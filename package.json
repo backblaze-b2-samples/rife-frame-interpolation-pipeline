@@ -48,7 +48,7 @@
       "picomatch@<3": "2.3.2",
       "picomatch@>=4 <5": "4.0.4",
       "postcss": "8.5.23",
-      "postcss-selector-parser": "7.1.5",
+      "postcss-selector-parser": "7.1.6",
       "qs": "6.16.0",
       "sharp": "0.35.3",
       "shell-quote": "1.9.0",
